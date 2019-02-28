@@ -1,16 +1,21 @@
 # -*- coding: utf-8 -*-
 """
-Spyder Editor
-
-This is a temporary script file.
+Deep Learning with Python by Francois Chollet
+2. Before we begin: the mathematical building blocks of neural networks
+2.1 A first look at a neural network (MNIST dataset)
 """
 from keras.datasets import mnist
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.utils import to_categorical
+import matplotlib.pyplot as plt
 
 #Loading the MNIST dataset in Keras
 (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
+
+#digit = test_images[0]
+#plt.imshow(digit, cmap=plt.cm.binary)
+#plt.show()
 
 #The network architecture
 network = Sequential()
