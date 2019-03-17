@@ -5,7 +5,10 @@ Deep Learning with Python by Francois Chollet
 3.5 Classifying newswires: a multiclass classification example
 """
 from keras.datasets import reuters
+from keras.layers import Dense
 from keras.utils import to_categorical
+from keras.models import Sequential
+import matplotlib.pyplot as plt
 import numpy as np
 
 def vectorize_sequences(sequences, dimension=10000):
@@ -21,6 +24,81 @@ def vectorize_sequences(sequences, dimension=10000):
 x_train = vectorize_sequences(train_data)
 x_test = vectorize_sequences(test_data)
 
-one_hot_train_labels = to_categorical(train_labels)
-one_hot_test_labels = to_categorical(test_labels)
+y_train = to_categorical(train_labels)
+y_test = to_categorical(test_labels)
 
+# Model definition
+model = Sequential()
+model.add(Dense(64, activation='relu', input_shape=(10000,)))
+model.add(Dense(64, activation='relu'))
+model.add(Dense(46, activation='softmax'))
+
+# Compiling the model
+model.compile(optimizer='rmsprop',
+              loss='categorical_crossentropy',
+              metrics=['accuracy'])
+
+# Setting aside a validation set
+x_val = x_train[:1000]
+partial_x_train = x_train[1000:]
+
+y_val = y_train[:1000]
+partial_y_train = y_train[1000:]
+
+# Training the model
+history = model.fit(partial_x_train,
+                    partial_y_train,
+                    epochs=20,
+                    batch_size=512,
+                    validation_data=(x_val, y_val))
+
+# Plotting the training and validation loss
+history_dict = history.history
+loss_values = history_dict['loss']
+val_loss_values = history_dict['val_loss']
+epochs = range(1, len(loss_values) + 1)
+
+fig1 = plt.figure()
+ax1 = fig1.gca()
+ax1.plot(epochs, loss_values, 'bo', label='Training loss')
+ax1.plot(epochs, val_loss_values, 'r', label='Validation loss')
+ax1.set_title('Training and validation loss')
+ax1.set_xlabel('Epochs')
+ax1.set_ylabel('Loss')
+ax1.legend()
+
+# Plotting the training and validation accuracy
+acc_values = history_dict['acc']
+val_acc_values = history_dict['val_acc']
+
+fig2 = plt.figure()
+ax2 = fig2.gca()
+ax2.plot(epochs, acc_values, 'bo', label='Training accuracy')
+ax2.plot(epochs, val_acc_values, 'r', label='Validation accuracy')
+ax2.set_title('Training and validation accuracy')
+ax2.set_xlabel('Epochs')
+ax2.set_ylabel('Accuracy')
+ax2.legend()
+
+plt.show()
+
+# Retraining a model from scratch
+model = Sequential()
+model.add(Dense(64, activation='relu', input_shape=(10000,)))
+model.add(Dense(64, activation='relu'))
+model.add(Dense(46, activation='softmax'))
+
+model.compile(optimizer='rmsprop',
+              loss='categorical_crossentropy',
+              metrics=['accuracy'])
+
+model.fit(partial_x_train,
+          partial_y_train,
+          epochs=9,
+          batch_size=512, 
+          validation_data=(x_val, y_val))
+results = model.evaluate(x_test, y_test)
+print(results)
+
+# Generating predictions on new data
+predictions = model.predict(x_test)
