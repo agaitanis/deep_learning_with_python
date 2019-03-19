@@ -7,6 +7,7 @@ Deep Learning with Python by Francois Chollet
 from keras.datasets import boston_housing
 from keras.models import Sequential
 from keras.layers import Dense
+import matplotlib.pyplot as plt
 import numpy as np
 
 
@@ -87,4 +88,42 @@ for i in range(k):
     mae_history = history.history['val_mean_absolute_error']
     all_mae_histories.append(mae_history)
 
+
+# Building the history of successive mean K-fold validation scores
 average_mae_history = [np.mean([x[i] for x in all_mae_histories]) for i in range(num_epochs)]
+
+
+# Plotting validation scores
+fig = plt.figure()
+ax = fig.gca()
+ax.plot(range(1, len(average_mae_history) + 1), average_mae_history)
+ax.set_xlabel('Epochs')
+ax.set_ylabel('Validation MAE')
+
+
+# Plotting validation scores, excluding the first 10 data points
+def smoothe_curve(points, factor=0.9):
+    smoothed_points = []
+    for point in points:
+        if smoothed_points:
+            previous = smoothed_points[-1]
+            smoothed_points.append(previous*factor + point*(1 - factor))
+        else:
+            smoothed_points.append(point)
+    return smoothed_points
+
+smooth_mae_history = smoothe_curve(average_mae_history[10:])
+
+fig = plt.figure()
+ax = fig.gca()
+ax.plot(range(1, len(smooth_mae_history) + 1), smooth_mae_history)
+ax.set_xlabel('Epochs')
+ax.set_ylabel('Validation MAE')
+
+
+# Training the final model
+model = build_model()
+model.fit(train_data, train_targets,
+          epochs=80, batch_size=16, verbose=0)
+test_mse_score, test_mae_score = model.evaluate(test_data, test_targets)
+print('test_mae_score =', test_mae_score)
