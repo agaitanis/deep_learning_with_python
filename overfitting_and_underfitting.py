@@ -7,6 +7,8 @@ Deep Learning with Python by Francois Chollet
 from keras.datasets import imdb
 from keras.models import Sequential
 from keras.layers import Dense
+from keras.layers import Dropout
+from keras.regularizers import l2
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -112,4 +114,61 @@ ax.plot(epochs, original_loss_values, '+', label='Original model')
 ax.plot(epochs, loss_values, 'o', label='Bigger model')
 ax.set_xlabel('Epochs')
 ax.set_ylabel('Training Loss')
+ax.legend()
+
+
+# Adding L2 weight regularization to the model
+model = Sequential()
+model.add(Dense(16, kernel_regularizer=l2(0.001), activation='relu', 
+                input_shape=(x_train.shape[1],)))
+model.add(Dense(16, kernel_regularizer=l2(0.001), activation='relu'))
+model.add(Dense(1, activation='sigmoid'))
+
+model.compile(optimizer='rmsprop',
+                loss='binary_crossentropy',
+                metrics=['accuracy'])
+
+history = model.fit(partial_x_train,
+                    partial_y_train,
+                    epochs=20,
+                    batch_size=512,
+                    validation_data=(x_val, y_val))
+
+val_loss_values = history.history['val_loss']
+
+fig = plt.figure()
+ax = fig.gca()
+ax.plot(epochs, original_val_loss_values, '+', label='Original model')
+ax.plot(epochs, val_loss_values, 'o', label='L2-regularized model')
+ax.set_xlabel('Epochs')
+ax.set_ylabel('Validation Loss')
+ax.legend()
+
+
+# Adding dopout to the IMDB network
+model = Sequential()
+model.add(Dense(16, activation='relu', input_shape=(x_train.shape[1],)))
+model.add(Dropout(0.5))
+model.add(Dense(16, activation='relu'))
+model.add(Dropout(0.5))
+model.add(Dense(1, activation='sigmoid'))
+
+model.compile(optimizer='rmsprop',
+                loss='binary_crossentropy',
+                metrics=['accuracy'])
+
+history = model.fit(partial_x_train,
+                    partial_y_train,
+                    epochs=20,
+                    batch_size=512,
+                    validation_data=(x_val, y_val))
+
+val_loss_values = history.history['val_loss']
+
+fig = plt.figure()
+ax = fig.gca()
+ax.plot(epochs, original_val_loss_values, '+', label='Original model')
+ax.plot(epochs, val_loss_values, 'o', label='Dropout-regularized model')
+ax.set_xlabel('Epochs')
+ax.set_ylabel('Validation Loss')
 ax.legend()
