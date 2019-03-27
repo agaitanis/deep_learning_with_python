@@ -8,8 +8,8 @@ Deep Learning with Python by Francois Chollet
 import os
 import shutil
 
-original_dataset_dir = 'D:/Users/alexa/Documents/GitHub/deep_learning_with_python/cats_and_dogs/train'
-base_dir = 'D:/Users/alexa/Documents/GitHub/deep_learning_with_python/cats_and_dogs_small'
+original_dataset_dir = 'cats_and_dogs/train'
+base_dir = 'cats_and_dogs_small'
 os.mkdir(base_dir)
 
 train_dir = os.path.join(base_dir, 'train')
