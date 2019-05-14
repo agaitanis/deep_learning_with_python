@@ -34,3 +34,32 @@ for i, line in enumerate(lines):
 
 
 # Plotting the temperature timeseries
+import matplotlib.pyplot as plt
+
+temp = float_data[:, 1]
+plt.plot(range(len(temp)), temp)
+
+
+# Plotting the first 10 days of the temperature timeseries
+plt.figure()
+plt.plot(range(1440), temp[:1440])
+
+
+# Normalizing the data
+mean = float_data[:200000].mean(axis=0)
+float_data -= mean
+std = float_data[:200000].std(axis=0)
+float_data /= std
+
+
+# Generator yielding timeseries samples and their targets
+
+
+
+
+
+
+
+
+
+
