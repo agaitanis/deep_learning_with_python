@@ -42,6 +42,7 @@ results = np.zeros(shape=(len(samples),
 
 for i, sample in enumerate(samples):
     for j, character in enumerate(sample):
+        if j >= max_length: break
         index = token_index.get(character)
         results[i, j, index] = 1.
 

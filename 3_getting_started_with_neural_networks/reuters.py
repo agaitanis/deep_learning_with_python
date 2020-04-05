@@ -68,8 +68,8 @@ ax1.set_ylabel('Loss')
 ax1.legend()
 
 # Plotting the training and validation accuracy
-acc_values = history_dict['acc']
-val_acc_values = history_dict['val_acc']
+acc_values = history_dict['accuracy']
+val_acc_values = history_dict['val_accuracy']
 
 fig2 = plt.figure()
 ax2 = fig2.gca()
